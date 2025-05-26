@@ -1,6 +1,6 @@
 {
-  "name": "joplin-plugin-spoilers",
-  "version": "1.0.0",
+  "name": "joplin-plugin-click-to-copy",
+  "version": "1.0.1",
   "scripts": {
     "dist": "webpack --env joplin-plugin-config=buildMain && webpack --env joplin-plugin-config=buildExtraScripts && webpack --env joplin-plugin-config=createArchive",
     "prepare": "npm run dist",
@@ -15,7 +15,6 @@
     "publish"
   ],
   "devDependencies": {
-    "@joplin/lib": "~2.9",
     "@types/node": "^18.7.13",
     "chalk": "^4.1.0",
     "copy-webpack-plugin": "^11.0.0",
