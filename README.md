@@ -36,6 +36,12 @@ You can additionally make the text within the span render as inline code by wrap
 [[`This will render as inline code, but still be click-to-copy`]]
 ```
 
+## Screenshots
+
+Use it for things you may frequently want to copy/paste
+
+![](screenshots/1.png)
+
 ## Custom styles
 
 If you would like to style the collapsible blocks to your preference, use the following in your `userstyle.css` file, which can be accessed in `Joplin` → `Options` → `Appearance` → `Show Advanced Settings` → `Custom stylesheet for rendered Markdown`:
