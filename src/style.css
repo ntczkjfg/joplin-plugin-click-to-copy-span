@@ -1,0 +1,37 @@
+.ctc {
+  padding: 0px 4px;
+  border-radius: 4px;
+  user-select: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ctc {
+    border: 1px solid #555;
+    background-color: #333;
+  }
+  .ctc:hover {
+    background-color: #444;
+    border-color: #666;
+  }
+  .ctc:active {
+    background-color: #666;
+    border-color: #888;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .ctc {
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+  }
+  .ctc:hover {
+    background-color: #e0e0e0;
+    border-color: #bbb;
+  }
+  .ctc:active {
+    background-color: #d0d0d0;
+    border-color: #aaa;
+  }
+}

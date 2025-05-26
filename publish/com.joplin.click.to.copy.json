@@ -1,0 +1,21 @@
+{
+	"manifest_version": 1,
+	"id": "com.joplin.click.to.copy",
+	"app_min_version": "3.2",
+	"version": "1.0.0",
+	"name": "Click to copy",
+	"description": "Create text spans which are click-to-copy.",
+	"author": "",
+	"homepage_url": "",
+	"repository_url": "",
+	"keywords": [
+		"joplin",
+		"plugin",
+		"click",
+		"copy",
+		"spans",
+		"click-to-copy"
+	],
+	"_publish_hash": "sha256:104721b25e1dc8e29d6d7d82881e4e2a72569cba5c0e8e5101b757730a26de2e",
+	"_publish_commit": ""
+}
