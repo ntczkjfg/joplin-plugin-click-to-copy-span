@@ -55,7 +55,7 @@ joplin.plugins.register({
 		await joplin.views.toolbarButtons.create('insert_click_to_copy_span', 'insert_click_to_copy_span', ToolbarButtonLocation.EditorToolbar);
 
 		// Register the editor plugin
-		const editorScriptId = 'joplin-plugin-click-to-copy-span-editor';
+		const editorScriptId = 'com.joplin.click.to.copy.editor';
         await joplin.contentScripts.register(
         	ContentScriptType.CodeMirrorPlugin,
         	editorScriptId,
@@ -81,7 +81,7 @@ joplin.plugins.register({
 		});
 
 		// Register the webview plugin
-		const webviewScriptId = 'joplin-plugin-click-to-copy-span';
+		const webviewScriptId = 'com.joplin.click.to.copy';
 		await joplin.contentScripts.register(
 			ContentScriptType.MarkdownItPlugin,
 			webviewScriptId,
