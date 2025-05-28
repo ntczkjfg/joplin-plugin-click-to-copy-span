@@ -2,7 +2,7 @@
 
 This Joplin plugin allows you to create inline click-to-copy text spans. 
 
-**Version**: 1.0
+**Version**: 1.1.0
 
 ## Installation
 
@@ -21,7 +21,7 @@ This Joplin plugin allows you to create inline click-to-copy text spans.
 
 ### Click-to-copy spans
 
-In order to create a collapsible block, you can:
+In order to create a Click-to-Copy Span, you can:
 - press on the `Click-to-Copy Span` toolbar button to create a template span, or
 - highlight text then press on the `Click-to-Copy Span` toolbar button to convert it to a span, or
 - or manually type in the following format:
@@ -54,7 +54,7 @@ If you would like to style the collapsible blocks to your preference, use the fo
 ```
 
 ## Settings
-There is a settings page for the plugin in the Joplin options. There, you can customize the start and end tokens away from the default `[[` and `]]`. 
+There is a settings page for the plugin in the Joplin options. There, you can customize the start and end tokens away from the default `[[` and `]]`. You can also disable having the spans appear in the editor if you'd prefer only the raw text there. 
 
 ## Notes
 

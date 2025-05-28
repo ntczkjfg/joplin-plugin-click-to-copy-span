@@ -9,6 +9,13 @@ joplin.plugins.register({
 		    iconName: 'fas fa-copy',
 		});
 		await joplin.settings.registerSettings({
+			showInEditor: {
+		        value: true,
+		        type: 3, // Boolean
+		        section: 'clickToCopySpans',
+		        public: true,
+		        label: 'Render in the Editor view also',
+		    },
 		    startToken: {
 		        value: '[[', // Default start token
 		        type: 2, // String
@@ -47,10 +54,39 @@ joplin.plugins.register({
 		// Add it to the toolbar
 		await joplin.views.toolbarButtons.create('insert_click_to_copy_span', 'insert_click_to_copy_span', ToolbarButtonLocation.EditorToolbar);
 
-		// Register the plugin
-		const contentScriptId = 'com.joplin.click.to.copy';
-		await joplin.contentScripts.register(ContentScriptType.MarkdownItPlugin, contentScriptId, './ctc.js');
-		await joplin.contentScripts.onMessage(contentScriptId, (message: string) => {
+		// Register the editor plugin
+		const editorScriptId = 'joplin.plugin.click.to.copy.span.editor';
+        await joplin.contentScripts.register(
+        	ContentScriptType.CodeMirrorPlugin,
+        	editorScriptId,
+        	'./editorScript.js');
+        // The editor script sends a message here to receive settings
+		await joplin.contentScripts.onMessage(editorScriptId, async (message: { name: string, data: { [key: string]: any } }) => {
+			switch (message.name) {
+				case 'copyText':
+					joplin.clipboard.writeText(message.data.text);
+					break;
+				case 'getSettings':
+					const [showInEditor, startToken, endToken] = await Promise.all([
+				        joplin.settings.value('showInEditor'),
+				        joplin.settings.value('startToken'),
+				        joplin.settings.value('endToken')
+				    ]);
+				    const settings = { showInEditor, startToken, endToken };
+				    return settings;
+					break;
+				default:
+					break;
+			}
+		});
+
+		// Register the webview plugin
+		const webviewScriptId = 'joplin.plugin.click.to.copy.span';
+		await joplin.contentScripts.register(
+			ContentScriptType.MarkdownItPlugin,
+			webviewScriptId,
+			'./webviewScript.js');
+		await joplin.contentScripts.onMessage(webviewScriptId, (message: string) => {
 	    	joplin.clipboard.writeText(message);
 	    });
 	},

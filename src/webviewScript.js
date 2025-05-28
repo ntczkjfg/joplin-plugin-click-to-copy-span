@@ -37,11 +37,13 @@ function clickToCopy(state, silent, startToken, endToken, pluginId) {
     // Open the span
     let token = state.push('span_open', 'span', 1);
     token.attrs = [[ 'class', 'ctc' ], [ 'onclick',   `let content = ${JSON.stringify(content)};
-                                                                        if (content.startsWith('\`') && content.endsWith('\`') && content.length > 1) {
-                                                                            // Inline code block - take off the backticks from the copy-text
-                                                                            content = content.slice(1, -1);
-                                                                        }
-                                                                        webviewApi.postMessage('${pluginId}', content)` ]];
+                                                       if (content.startsWith('\`') && content.endsWith('\`') && content.length > 1) {
+                                                           // Inline code block - take off the backticks from the copy-text
+                                                           content = content.slice(1, -1);
+                                                       }
+                                                       webviewApi.postMessage('${pluginId}', content)`
+                                       ]
+                  ];
 
     // Fill it with content
     // See if it's inline code or not to decide token type
