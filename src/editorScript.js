@@ -3,7 +3,7 @@ import { RangeSetBuilder } from '@codemirror/state';
 
 export default (context) => {
     return {
-        assets: () => [{ name: './style.css' }],
+        assets: () => [{ name: 'style.css' }],
         plugin: async (codeMirrorWrapper) => {
             const settings = await context.postMessage({ name: 'getSettings', data: {} });
             const { showInEditor, startToken, endToken } = settings;

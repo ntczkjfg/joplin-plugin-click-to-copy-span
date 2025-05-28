@@ -12,7 +12,7 @@ module.exports =  {
                                               });
             },
             assets: () => {
-                return [ { name: './style.css' } ];
+                return [ { name: 'style.css' } ];
             },
         };
     }
