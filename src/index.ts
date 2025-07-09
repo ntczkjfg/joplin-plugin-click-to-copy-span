@@ -1,34 +1,42 @@
 import joplin from 'api';
-import { ContentScriptType, ToolbarButtonLocation } from 'api/types';
+import { ContentScriptType, ToolbarButtonLocation, SettingItemType } from 'api/types';
 
 joplin.plugins.register({
 	onStart: async function() {
 		// Create the settings page
 		await joplin.settings.registerSection('clickToCopySpans', {
-		    label: 'Click-to-Copy spans',
+		    label: 'Click-to-Copy Spans',
+		    description: 'Click-to-Copy Span Plugin Settings',
 		    iconName: 'fas fa-copy',
 		});
 		await joplin.settings.registerSettings({
 			showInEditor: {
 		        value: true,
-		        type: 3, // Boolean
+		        type: SettingItemType.Bool,
 		        section: 'clickToCopySpans',
 		        public: true,
-		        label: 'Render in the Editor view also',
+		        label: 'Render in the Editor view also'
 		    },
+			hideMarkdown: {
+				value: true,
+				type: SettingItemType.Bool,
+				section: 'clickToCopySpans',
+				public: true,
+				label: 'Hide start and end tokens when rendering spans in the editor view'
+			},
 		    startToken: {
 		        value: '[[', // Default start token
-		        type: 2, // String
+		        type: SettingItemType.String,
 		        section: 'clickToCopySpans',
 		        public: true,
-		        label: 'Start Token',
+		        label: 'Start Token'
 		    },
 		    endToken: {
 		        value: ']]', // Default end token
-		        type: 2, // String
+		        type: SettingItemType.String,
 		        section: 'clickToCopySpans',
 		        public: true,
-		        label: 'End Token',
+		        label: 'End Token'
 		    }
 		});
 
@@ -49,7 +57,8 @@ joplin.plugins.register({
 						await joplin.commands.execute('insertText',`${startToken}Insert text here${endToken}`);
 					}
 				}
-			}
+			},
+			enabledCondition: 'markdownEditorPaneVisible && !richTextEditorVisible'
 		});
 		// Add it to the toolbar
 		await joplin.views.toolbarButtons.create('insert_click_to_copy_span', 'insert_click_to_copy_span', ToolbarButtonLocation.EditorToolbar);
@@ -66,13 +75,24 @@ joplin.plugins.register({
 				case 'copyText':
 					joplin.clipboard.writeText(message.data.text);
 					break;
+				case 'copyPassword':
+					const password = message.data.text;
+					joplin.clipboard.writeText(password);
+					setTimeout(async () => {
+						const currentClipboard = await joplin.clipboard.readText();
+						if (currentClipboard === password) {
+							await joplin.clipboard.writeText('');
+						}
+					}, 15000);
+					break;
 				case 'getSettings':
-					const [showInEditor, startToken, endToken] = await Promise.all([
+					const [showInEditor, hideMarkdown, startToken, endToken] = await Promise.all([
 				        joplin.settings.value('showInEditor'),
+						joplin.settings.value('hideMarkdown'),
 				        joplin.settings.value('startToken'),
 				        joplin.settings.value('endToken')
 				    ]);
-				    const settings = { showInEditor, startToken, endToken };
+				    const settings = { showInEditor, hideMarkdown, startToken, endToken };
 				    return settings;
 					break;
 				default:
@@ -86,8 +106,24 @@ joplin.plugins.register({
 			ContentScriptType.MarkdownItPlugin,
 			webviewScriptId,
 			'webviewScript.js');
-		await joplin.contentScripts.onMessage(webviewScriptId, (message: string) => {
-	    	joplin.clipboard.writeText(message);
+		await joplin.contentScripts.onMessage(webviewScriptId, (message: { name: string, data: { [key: string]: any } }) => {
+			switch (message.name) {
+				case 'copyText':
+					joplin.clipboard.writeText(message.data.text);
+					break;
+				case 'copyPassword':
+					const password = message.data.text;
+					joplin.clipboard.writeText(password);
+					setTimeout(async () => {
+						const currentClipboard = await joplin.clipboard.readText();
+						if (currentClipboard === password) {
+							await joplin.clipboard.writeText('');
+						}
+					}, 15000);
+					break;
+				default:
+					break;
+			}
 	    });
 	},
 });

@@ -18,7 +18,7 @@ module.exports =  {
     }
 };
 
-// Tokenizing the click-to-copy fields
+// Tokenizing the click-to-copy spans
 function clickToCopy(state, silent, startToken, endToken, pluginId) {
     // Doesn't start with startToken
     if (!state.src.slice(state.pos).startsWith(startToken)) return false;
@@ -29,6 +29,16 @@ function clickToCopy(state, silent, startToken, endToken, pluginId) {
     endPos = startPos + startToken.length + endPos;
     // The content between startToken and endToken
     let content = state.src.slice(startPos + startToken.length, endPos);
+    let isPassword = false;
+    if (content.startsWith(startToken)) {
+        isPassword = true;
+        content = content.slice(startToken.length);
+    }
+    let clearClipboard = false;
+    if (state.src.slice(endPos + endToken.length, state.posMax).startsWith(endToken)) {
+        clearClipboard = true;
+        endPos += endToken.length;
+    }
     if (content.includes('\n')) return false;
     if (silent) {
         state.pos = endPos + endToken.length;
@@ -36,14 +46,39 @@ function clickToCopy(state, silent, startToken, endToken, pluginId) {
     }
     // Open the span
     let token = state.push('span_open', 'span', 1);
-    token.attrs = [[ 'class', 'ctc' ], [ 'onclick',   `let content = ${JSON.stringify(content)};
-                                                       if (content.startsWith('\`') && content.endsWith('\`') && content.length > 1) {
-                                                           // Inline code block - take off the backticks from the copy-text
-                                                           content = content.slice(1, -1);
-                                                       }
-                                                       webviewApi.postMessage('${pluginId}', content)`
-                                       ]
-                  ];
+    const command = (clearClipboard) ? 'copyPassword' : 'copyText';
+    token.attrs = [
+        [ 'class', 'ctc' ],
+        [ 'onclick',   `
+            // Prevents clicking the span from doing things like toggling the state of checklist items
+            event.preventDefault();
+            let content = ${JSON.stringify(content)};
+            if (content.startsWith('\`') && content.endsWith('\`') && content.length > 1) {
+                // Inline code block - take off the backticks from the copy-text
+                content = content.slice(1, -1);
+            }
+            webviewApi.postMessage('${pluginId}', { name: '${command}', data: { text: content } })
+        `],
+        ['oncontextmenu', `
+        if (${isPassword}) {
+            let content = ${JSON.stringify(content)};
+            if (content.startsWith('\`') && content.endsWith('\`') && content.length > 1) {
+                // Inline code block - take off the backticks from the copy-text
+                content = content.slice(1, -1);
+            }
+            const span = this;
+            const code = span.querySelector('code');
+            // Ensures we don't overwrite the <code> tag, if present
+            const target = code || span;
+            // Alternate between having the password be visible and obfuscated
+            if (target.textContent === content) {
+                target.textContent = '•'.repeat(content.length);
+            } else {
+                target.textContent = content;
+            }
+        }
+        `]
+    ];
 
     // Fill it with content
     // See if it's inline code or not to decide token type
@@ -56,7 +91,11 @@ function clickToCopy(state, silent, startToken, endToken, pluginId) {
         // Not inline code, treat it as plain text
         token = state.push('text', '', 0);
     }
-    token.content = content;
+    if (isPassword) {
+        token.content = '•'.repeat(content.length);
+    } else {
+        token.content = content;
+    }
     token.children = [];
     state.md.renderer.render(token, state.options);
 

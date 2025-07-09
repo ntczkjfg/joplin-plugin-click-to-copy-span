@@ -6,20 +6,28 @@ export default (context) => {
         assets: () => [{ name: 'style.css' }],
         plugin: async (codeMirrorWrapper) => {
             const settings = await context.postMessage({ name: 'getSettings', data: {} });
-            const { showInEditor, startToken, endToken } = settings;
+            const { showInEditor, hideMarkdown, startToken, endToken } = settings;
             const escapedStartToken = startToken.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const escapedEndToken = endToken.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            const ctcRegex = new RegExp(`${escapedStartToken}(.*?)${escapedEndToken}`, 'g');
+            const ctcRegex = new RegExp(`((?:${escapedStartToken}){1,2})(.*?)((?:${escapedEndToken}){1,2})`, 'g');
 
             // Defines a CodeMirror view plugin that updates decorations on relevant changes
             const ctcPlugin = ViewPlugin.fromClass(
                 class {
                     constructor(view) {
-                        this.decorations = applyDecorations(view);
+                        try {
+                            this.decorations = applyDecorations(view);
+                        } catch (e) {
+                            console.error(e);
+                        }
                     }
                     update(update) {
                         if (update.docChanged || update.viewportChanged || update.selectionSet) {
-                            this.decorations = applyDecorations(update.view);
+                            try {
+                                this.decorations = applyDecorations(update.view);
+                            } catch (e) {
+                                console.error(e);
+                            }
                         }
                     }
                 },
@@ -47,19 +55,58 @@ export default (context) => {
                         const line = view.state.doc.line(lineNo); // line content
                         let match;
                         while ((match = ctcRegex.exec(line.text)) !== null) {
-                            const start = line.from + match.index;
+                            let start = line.from + match.index;
                             // match[0] = the entire matched string, not just a capture group
-                            const end = start + match[0].length;
-                            builder.add(
-                                start,
-                                end,
-                                // Decoration.replace ensures the editor text is *replaced by* the new span
-                                Decoration.replace({
-                                    // match[1] = the first (and only) capture group
-                                    widget: new ClickToCopyWidget(match[1]),
-                                    inclusive: false // Won't include adjacent text
-                                })
-                            );
+                            let end = start + match[0].length;
+                            let isPassword = false;
+                            let clearClipboard = false;
+                            if (match[1].length === 2*startToken.length) {
+                                isPassword = true;
+                            }
+                            if (match[3].length === 2*endToken.length) {
+                                clearClipboard = true;
+                            }
+                            if (!hideMarkdown) {
+                                let newStart = start + match[1].length;
+                                let newEnd = end - match[3].length;
+                                if (match[2].length > 1 && match[2].startsWith('`') && match[2].endsWith('`')) {
+                                    newStart += 1;
+                                    newEnd -= 1;
+                                }
+                                builder.add(
+                                    start,
+                                    newStart,
+                                    Decoration.mark({ class: 'ctc-markdown' })
+                                );
+                                builder.add(
+                                    newStart,
+                                    newEnd,
+                                    // Decoration.replace ensures the editor text is *replaced by* the new span
+                                    Decoration.replace({
+                                        // match[1] = the first (and only) capture group
+                                        widget: new ClickToCopyWidget(match[2], isPassword, clearClipboard),
+                                                       inclusive: false // Won't include adjacent text
+                                    })
+                                );
+                                builder.add(
+                                    newEnd,
+                                    end,
+                                    Decoration.mark({ class: 'ctc-markdown' })
+                                );
+                                start = newStart;
+                                end = newEnd;
+                            } else {
+                                builder.add(
+                                    start,
+                                    end,
+                                    // Decoration.replace ensures the editor text is *replaced by* the new span
+                                    Decoration.replace({
+                                        // match[1] = the first (and only) capture group
+                                        widget: new ClickToCopyWidget(match[2], isPassword, clearClipboard),
+                                        inclusive: false // Won't include adjacent text
+                                    })
+                                );
+                            }
                         }
                     }
                 }
@@ -68,9 +115,11 @@ export default (context) => {
 
             // WidgetType that defines the click-to-copy span and its various attributes
             class ClickToCopyWidget extends WidgetType {
-                constructor(text) {
+                constructor(text, isPassword, clearClipboard) {
                     super();
                     this.text = text;
+                    this.isPassword = isPassword;
+                    this.clearClipboard = clearClipboard;
                     this.checkTextForCode();
                 }
                 // See if this text is meant to be styled as an inline code block
@@ -98,9 +147,23 @@ export default (context) => {
                     span.spellcheck = false;
                     span.setAttribute('autocorrect', 'false');
                     // Add in the text
-                    span.textContent = this.text;
+                    if (this.isPassword) {
+                        span.textContent = '•'.repeat(this.text.length);
+                    } else {
+                        span.textContent = this.text;
+                    }
                     // on click, send the text to index.ts, which will then copy it to the user's clipboard
-                    span.onclick = () => { context.postMessage({ name: 'copyText', data: { text: this.text } }); };
+                    const command = (this.clearClipboard) ? 'copyPassword' : 'copyText'
+                    span.onclick = () => { context.postMessage({ name: `${command}`, data: { text: this.text } }); };
+                    span.oncontextmenu = (e) => {
+                        if (this.isPassword) {
+                            if (span.textContent === this.text) {
+                                span.textContent = '•'.repeat(this.text.length);
+                            } else {
+                                span.textContent = this.text;
+                            }
+                        }
+                    };
                     return span;
                 }
                 ignoreEvent() {

@@ -2,7 +2,7 @@
 
 This Joplin plugin allows you to create inline click-to-copy text spans. 
 
-**Version**: 1.1.2
+**Version**: 1.3.0
 
 ## Installation
 
@@ -13,8 +13,8 @@ This Joplin plugin allows you to create inline click-to-copy text spans.
 ### Uninstall
 
 - Open Joplin and navigate to `Tools > Options > Plugins`
-- Search for `Click-to-copy` plugin
-- Press `Delete` to remove the plugin or `Disable` to disable it
+- Find the `Click to copy` plugin
+- Press `Delete` to remove the plugin, or click the toggle to disable it
 - Restart Joplin
 
 ## Usage
@@ -36,13 +36,37 @@ You can additionally make the text within the span render as inline code by wrap
 [[`This will render as inline code, but still be click-to-copy`]]
 ```
 
+If you double the start token, then the span will render its text as dots, to obfuscate things like passwords. If you double the end token, then the plugin will attempt to clear your clipboard after 15 seconds. When a span is rendered as a password, right clicking it will toggle between displaying dots and the actual text. 
+
+```
+[[[[`This will show up as dots, and be erased from the clipboard 15 seconds after being clicked`]]]]
+```
+
 ## Screenshots
 
-Use it for things you may frequently want to copy/paste
+Use it for things you may frequently want to copy/paste:
 
 ![](screenshots/1.png)
 
-## Custom styles
+With password obfuscation and forgetting:
+
+![](screenshots/2.png)
+
+With editor view enabled (default):
+
+![](screenshots/3.png)
+
+## Settings
+There is a settings page for the plugin in the Joplin options. There, you can:
+* Customize the start and end tokens away from the default `[[` and `]]`
+* Disable having the spans appear in the editor if you'd prefer only the raw text there
+* Choose if the start and end tokens are shown or hidden, when displaying spans in the editor is enabled
+
+![](screenshots/settings.png)
+
+## Advanced
+
+### Custom styles
 
 If you would like to style the collapsible blocks to your preference, use the following in your `userstyle.css` file, which can be accessed in `Joplin` → `Options` → `Appearance` → `Show Advanced Settings` → `Custom stylesheet for rendered Markdown`:
 
@@ -51,10 +75,12 @@ If you would like to style the collapsible blocks to your preference, use the fo
 .ctc {
 
 }
-```
 
-## Settings
-There is a settings page for the plugin in the Joplin options. There, you can customize the start and end tokens away from the default `[[` and `]]`. You can also disable having the spans appear in the editor if you'd prefer only the raw text there. 
+/* Styling of the ctc-markdown, only when displaying ctc-spans in the editor, and not hiding markdown */
+.ctc-markdown {
+
+}
+```
 
 ## Notes
 
@@ -63,3 +89,7 @@ There is a settings page for the plugin in the Joplin options. There, you can cu
 ## Acknowledgement
 
 Thanks to the creator of the [Joplin Spoilers](https://github.com/martinkorelic/joplin-plugin-spoilers) plugin, whose code helped me build this plugin. 
+
+## Other plugins
+
+See my other plugin, [Collapsible blocks](https://github.com/ntczkjfg/joplin-plugin-collapsible-block)! Easily lets you create collapsible/foldable blocks that can hide their content from view. 

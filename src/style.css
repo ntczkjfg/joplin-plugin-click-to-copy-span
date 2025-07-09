@@ -6,6 +6,19 @@
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+.ctc-markdown {
+  font-size: 0.9em;
+  color: #888;
+}
+
+.ctc-markdown .cm-inlineCode {
+  border: inherit;
+  background-color: inherit;
+  font: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
 @media (prefers-color-scheme: dark) {
   .ctc {
     border: 1px solid #555;
