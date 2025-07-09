@@ -2,7 +2,7 @@
 
 This Joplin plugin allows you to create inline click-to-copy text spans. 
 
-**Version**: 1.3.0
+**Version**: 1.3.1
 
 ## Installation
 

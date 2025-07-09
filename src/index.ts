@@ -81,7 +81,7 @@ joplin.plugins.register({
 					setTimeout(async () => {
 						const currentClipboard = await joplin.clipboard.readText();
 						if (currentClipboard === password) {
-							await joplin.clipboard.writeText('');
+							await joplin.clipboard.writeText(' ');
 						}
 					}, 15000);
 					break;
@@ -117,7 +117,7 @@ joplin.plugins.register({
 					setTimeout(async () => {
 						const currentClipboard = await joplin.clipboard.readText();
 						if (currentClipboard === password) {
-							await joplin.clipboard.writeText('');
+							await joplin.clipboard.writeText(' ');
 						}
 					}, 15000);
 					break;
