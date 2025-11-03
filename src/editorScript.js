@@ -55,6 +55,7 @@ export default (context) => {
                         const line = view.state.doc.line(lineNo); // line content
                         let match;
                         while ((match = ctcRegex.exec(line.text)) !== null) {
+                            if (startToken === '`' && endToken === '`' && match[2] === '') continue;
                             let start = line.from + match.index;
                             // match[0] = the entire matched string, not just a capture group
                             let end = start + match[0].length;
@@ -129,6 +130,9 @@ export default (context) => {
                         this.isCode = true;
                         // Remove the backticks
                         this.text = this.text.slice(1, -1);
+                    } else if (startToken === '`' && endToken === '`') {
+                        // The start and end tokens are backticks - display as inline code, nothing to remove
+                        this.isCode = true;
                     } else {
                         // Not inline code
                         this.isCode = false;

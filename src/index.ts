@@ -11,33 +11,33 @@ joplin.plugins.register({
 		});
 		await joplin.settings.registerSettings({
 			showInEditor: {
-		        value: true,
-		        type: SettingItemType.Bool,
 		        section: 'clickToCopySpans',
 		        public: true,
-		        label: 'Render in the Editor view also'
+		        type: SettingItemType.Bool,
+		        value: true,
+		        label: 'Render in the Editor view also',
 		    },
 			hideMarkdown: {
-				value: true,
-				type: SettingItemType.Bool,
 				section: 'clickToCopySpans',
 				public: true,
-				label: 'Hide start and end tokens when rendering spans in the editor view'
+				type: SettingItemType.Bool,
+				value: true,
+				label: 'Hide start and end tokens when rendering spans in the editor view',
 			},
 		    startToken: {
-		        value: '[[', // Default start token
-		        type: SettingItemType.String,
 		        section: 'clickToCopySpans',
 		        public: true,
-		        label: 'Start Token'
+		        type: SettingItemType.String,
+		        value: '[[', // Default start token
+		        label: 'Start Token',
 		    },
 		    endToken: {
-		        value: ']]', // Default end token
-		        type: SettingItemType.String,
 		        section: 'clickToCopySpans',
 		        public: true,
-		        label: 'End Token'
-		    }
+		        type: SettingItemType.String,
+		        value: ']]', // Default end token
+		        label: 'End Token',
+		    },
 		});
 
 		// Create a toolbar button
@@ -90,7 +90,7 @@ joplin.plugins.register({
 				        joplin.settings.value('showInEditor'),
 						joplin.settings.value('hideMarkdown'),
 				        joplin.settings.value('startToken'),
-				        joplin.settings.value('endToken')
+				        joplin.settings.value('endToken'),
 				    ]);
 				    const settings = { showInEditor, hideMarkdown, startToken, endToken };
 				    return settings;

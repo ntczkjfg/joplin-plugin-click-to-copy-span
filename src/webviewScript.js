@@ -5,7 +5,7 @@ module.exports =  {
             plugin: async function(markdownIt, options) {
                 const startToken = options.settingValue('startToken'),
                       endToken = options.settingValue('endToken');
-                markdownIt.inline.ruler.before('emphasis',
+                markdownIt.inline.ruler.before('text',
                                               'clickToCopy',
                                               function(state, silent) {
                                                   return clickToCopy(state, silent, startToken, endToken, pluginId);
@@ -20,8 +20,39 @@ module.exports =  {
 
 // Tokenizing the click-to-copy spans
 function clickToCopy(state, silent, startToken, endToken, pluginId) {
+    if (startToken === undefined || endToken === undefined) {
+        /*return false;*/
+        // Temporary low-quality hotfix for issue affecting 3.4.6 pre-release on mobile, causing spans to not render on initial note load
+        startToken = '[[';
+        endToken = ']]';
+    }
     // Doesn't start with startToken
-    if (!state.src.slice(state.pos).startsWith(startToken)) return false;
+    if (!state.src.slice(state.pos).startsWith(startToken)) {
+        const symbols = ['!', '#', '$', '%', '&', '*', '+', '-', ':', '<', '=', '>', '@', '[', '\\', ']', '^', '_', '`', '{', '}', '~'];
+        if (!symbols.includes(startToken[0])) {
+            const remainder = state.src.slice(state.pos, state.posMax);
+            let firstIndex = state.posMax - state.pos;
+            for (const char of symbols) {
+                const index = remainder.indexOf(char);
+                if (index !== -1 && (firstIndex === -1 || index < firstIndex)) firstIndex = index;
+            }
+            if (firstIndex !== -1) {
+                const newSlice = state.src.slice(state.pos, state.pos + firstIndex);
+                if (newSlice.indexOf(startToken) !== -1) {
+                    const pos = state.pos + newSlice.indexOf(startToken);
+                    state.pending += state.src.slice(state.pos, pos);
+                    state.pos = pos;
+                }
+                else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
     let startPos = state.pos + state.src.slice(state.pos, state.posMax).indexOf(startToken);
     let endPos = state.src.slice(startPos + startToken.length, state.posMax).indexOf(endToken);
     // Doesn't contain endToken
@@ -47,6 +78,7 @@ function clickToCopy(state, silent, startToken, endToken, pluginId) {
     // Open the span
     let token = state.push('span_open', 'span', 1);
     const command = (clearClipboard) ? 'copyPassword' : 'copyText';
+    if (startToken === '`' && endToken === '`') content = '`' + content + '`';
     token.attrs = [
         [ 'class', 'ctc' ],
         [ 'onclick',   `
@@ -71,11 +103,7 @@ function clickToCopy(state, silent, startToken, endToken, pluginId) {
             // Ensures we don't overwrite the <code> tag, if present
             const target = code || span;
             // Alternate between having the password be visible and obfuscated
-            if (target.textContent === content) {
-                target.textContent = '•'.repeat(content.length);
-            } else {
-                target.textContent = content;
-            }
+            target.textContent = (target.textContent === content) ? '•'.repeat(content.length) : content;
         }
         `]
     ];

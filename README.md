@@ -2,7 +2,7 @@
 
 This Joplin plugin allows you to create inline click-to-copy text spans. 
 
-**Version**: 1.3.1
+**Version**: 1.3.3
 
 ## Installation
 
@@ -82,14 +82,16 @@ If you would like to style the collapsible blocks to your preference, use the fo
 }
 ```
 
-## Notes
+## Issues
 
-- **There might be bugs**, [report them here](https://github.com/ntczkjfg/joplin-plugin-click-to-copy-span/issues) and I'll try to fix them if I can.
+- **Encounter any bugs?** [Report them here](https://github.com/ntczkjfg/joplin-plugin-click-to-copy-span/issues), and I'll do my best to fix them.
 
 ## Acknowledgement
 
-Thanks to the creator of the [Joplin Spoilers](https://github.com/martinkorelic/joplin-plugin-spoilers) plugin, whose code helped me build this plugin. 
+Thanks to the creator of the [Joplin Spoilers](https://github.com/martinkorelic/joplin-plugin-spoilers) plugin, whose code helped me build this plugin. Our code bases and methodologies are wildly different at this point, but it got me started with Joplin plugins. 
 
 ## Other plugins
 
-See my other plugin, [Collapsible blocks](https://github.com/ntczkjfg/joplin-plugin-collapsible-block)! Easily lets you create collapsible/foldable blocks that can hide their content from view. 
+Check out my other plugins:
+* [Collapsible Blocks](https://github.com/ntczkjfg/joplin-plugin-collapsible-block)! Easily create collapsible/foldable blocks that can hide their content from view. 
+* [Hotstrings & Hotkeys]()https://github.com/ntczkjfg/joplin-plugin-hotstrings)! Easily create user-defined hotstrings and hotkeys for simple text insertion and replacement. 
