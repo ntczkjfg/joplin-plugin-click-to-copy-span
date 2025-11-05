@@ -38,6 +38,23 @@ joplin.plugins.register({
 		        value: ']]', // Default end token
 		        label: 'End Token',
 		    },
+		    inlineCodeWebview: {
+		    	section: 'clickToCopySpans',
+		    	public: true,
+		    	type: SettingItemType.Bool,
+		    	value: 'false',
+		    	label: 'Make ALL inline code click-to-copy in the Webview',
+		    },
+		    inlineCodeEditor: {
+		    	section: 'clickToCopySpans',
+		    	public: true,
+		    	type: SettingItemType.Bool,
+		    	value: 'false',
+		    	label: 'Make ALL inline code click-to-copy in the Editor',
+		    	description: 'Won\'t work on multiline inline code spans',
+		    	// ↑ It could, and at one point in development it did
+		    	// However, it was visually very confusing and so was removed
+		    },
 		});
 
 		// Create a toolbar button
@@ -86,13 +103,14 @@ joplin.plugins.register({
 					}, 15000);
 					break;
 				case 'getSettings':
-					const [showInEditor, hideMarkdown, startToken, endToken] = await Promise.all([
+					const [showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor] = await Promise.all([
 				        joplin.settings.value('showInEditor'),
 						joplin.settings.value('hideMarkdown'),
 				        joplin.settings.value('startToken'),
 				        joplin.settings.value('endToken'),
+				        joplin.settings.value('inlineCodeEditor'),
 				    ]);
-				    const settings = { showInEditor, hideMarkdown, startToken, endToken };
+				    const settings = { showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor };
 				    return settings;
 					break;
 				default:
