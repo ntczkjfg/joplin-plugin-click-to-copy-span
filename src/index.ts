@@ -55,6 +55,14 @@ joplin.plugins.register({
 		    	// ↑ It could, and at one point in development it did
 		    	// However, it was visually very confusing and so was removed
 		    },
+		    hideCodeDelimiters: {
+		    	section: 'clickToCopySpans',
+		    	public: true,
+		    	type: SettingItemType.Bool,
+		    	value: 'false',
+		    	label: 'Hide delimiting backticks when making inline code click-to-copy in the editor',
+		    	description: 'This option does nothing if the above option isn\'t also enabled',
+		    }
 		});
 
 		// Create a toolbar button
@@ -103,14 +111,15 @@ joplin.plugins.register({
 					}, 15000);
 					break;
 				case 'getSettings':
-					const [showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor] = await Promise.all([
+					const [showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor, hideCodeDelimiters] = await Promise.all([
 				        joplin.settings.value('showInEditor'),
 						joplin.settings.value('hideMarkdown'),
 				        joplin.settings.value('startToken'),
 				        joplin.settings.value('endToken'),
 				        joplin.settings.value('inlineCodeEditor'),
+				        joplin.settings.value('hideCodeDelimiters'),
 				    ]);
-				    const settings = { showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor };
+				    const settings = { showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor, hideCodeDelimiters };
 				    return settings;
 					break;
 				default:
