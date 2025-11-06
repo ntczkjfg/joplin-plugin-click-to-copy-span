@@ -2,7 +2,7 @@
 
 This Joplin plugin allows you to create inline click-to-copy text spans. 
 
-**Version**: 1.4.0
+**Version**: 1.4.1
 
 ## Installation
 
@@ -63,6 +63,7 @@ There is a settings page for the plugin in the Joplin options. There, you can:
 * Customize the start and end tokens away from the default `[[` and `]]`
 * Disable having the spans appear in the editor if you'd prefer only the raw text there
 * Choose if the start and end tokens are shown or hidden, when displaying spans in the editor is enabled
+* Enable or disable having inline code spans be click-to-copy in the webview and editor
 
 ![](screenshots/settings.png)
 

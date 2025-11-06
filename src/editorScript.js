@@ -6,7 +6,7 @@ export default (context) => {
         assets: () => [{ name: 'style.css' }],
         plugin: async (codeMirrorWrapper) => {
             const settings = await context.postMessage({ name: 'getSettings', data: {} });
-            const { showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor } = settings;
+            const { showInEditor, hideMarkdown, startToken, endToken, inlineCodeEditor, hideCodeDelimiters } = settings;
             const escapedStartToken = startToken.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const escapedEndToken = endToken.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const ctcRegex = new RegExp(`((?:${escapedStartToken}){1,2})(.+?)((?:${escapedEndToken}){1,2})`, 'g');
@@ -206,7 +206,7 @@ export default (context) => {
                         // Looks nice and works how users would expect
                         const start = from + matchLeft.index;
                         const end = from + matchRight.index + matchRight[0].length;
-                        const text = matchLeft[0] + content + matchRight[0]; // Adds the backticks
+                        const text = hideCodeDelimiters ? content : matchLeft[0] + content + matchRight[0];
                         builder.add(start, end,
                             Decoration.replace({
                                 // Parameters: Span's text content, isPassword, clearClipboard, isCode, text to be copied
