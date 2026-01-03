@@ -238,6 +238,7 @@ export default (context) => {
                         this.isCode = true;
                         // Remove the backticks
                         this.text = this.text.slice(1, -1);
+                        this.copyText = this.text;
                     } else if (startToken === '`' && endToken === '`') {
                         // The start and end tokens are backticks - display as inline code, nothing to remove
                         this.isCode = true;
